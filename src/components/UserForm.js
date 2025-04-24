@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/UserForm.module.css';
 
-export default function UserForm({ initialData, onSubmit, onCancel, users = [] }) {
+export default function UserForm({ initialData, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -14,10 +14,9 @@ export default function UserForm({ initialData, onSubmit, onCancel, users = [] }
     if (initialData) {
       setFormData(initialData);
     } else {
-      const newId = users.length > 0 ? Math.max(...users.map(u => u.id), 0) + 1 : 1;
-      setFormData(prev => ({ ...prev, id: newId }));
+      setFormData(prev => ({ ...prev, id: '' }));
     }
-  }, [initialData, users]);
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,10 +35,10 @@ export default function UserForm({ initialData, onSubmit, onCancel, users = [] }
           name="id"
           value={formData.id}
           onChange={handleChange}
-          className={initialData ? `${styles.formInput} ${styles.formInputNumber}` : styles.formInputNumber}
+          className={styles.formInputNumber}
           required
           min="1"
-          disabled={!!initialData}
+          step="1"
         />
       </div>
 

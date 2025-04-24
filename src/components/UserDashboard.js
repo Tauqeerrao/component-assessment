@@ -29,18 +29,43 @@ export default function UserDashboard() {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleAddUser = (userData) => {
+    // Check if ID is provided
+    if (!userData.id) {
+      alert('Please enter a User ID');
+      return;
+    }
+
+    // Check for duplicate ID
+    const idExists = users.some(user => user.id === Number(userData.id));
+    if (idExists) {
+      alert('This ID already exists! Please use a different ID.');
+      return;
+    }
+
     const newUser = {
       ...userData,
-      id: Math.max(...users.map(u => u.id), 0) + 1,
-      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
+      id: Number(userData.id),
+      avatar: userData.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
     };
+
     setUsers([...users, newUser]);
     setIsEditing(false);
   };
 
   const handleEditUser = (userData) => {
+    // Check if ID was changed to an existing one
+    if (userData.id !== selectedUser.id) {
+      const idExists = users.some(user => 
+        user.id === Number(userData.id) && user.id !== selectedUser.id
+      );
+      if (idExists) {
+        alert('This ID already exists! Please use a different ID.');
+        return;
+      }
+    }
+
     setUsers(users.map(user => 
-      user.id === userData.id ? userData : user
+      user.id === selectedUser.id ? { ...userData, id: Number(userData.id) } : user
     ));
     setIsEditing(false);
     setSelectedUser(null);
@@ -56,14 +81,11 @@ export default function UserDashboard() {
         />
       )}
       
-      {selectedUser && (
+      {selectedUser && !isEditing && (
         <UserProfile 
           user={selectedUser}
           onBack={() => setSelectedUser(null)}
-          onEdit={() => {
-            setIsEditing(true);
-            setSelectedUser(selectedUser);
-          }}
+          onEdit={() => setIsEditing(true)}
         />
       )}
       
