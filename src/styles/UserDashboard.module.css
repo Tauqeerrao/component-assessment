@@ -1,0 +1,13 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard h1 {
+  color: #1e293b;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+/* Add any global dashboard styles here */
