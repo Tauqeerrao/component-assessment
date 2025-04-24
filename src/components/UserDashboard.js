@@ -2,6 +2,7 @@ import { useState } from 'react';
 import UserList from './UserList';
 import UserProfile from './UserProfile';
 import UserForm from './UserForm';
+import styles from '../styles/UserDashboard.module.css';
 
 const initialUsers = [
   {
@@ -27,12 +28,30 @@ export default function UserDashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const handleAddUser = (userData) => {
+    const newUser = {
+      ...userData,
+      id: Math.max(...users.map(u => u.id), 0) + 1,
+      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
+    };
+    setUsers([...users, newUser]);
+    setIsEditing(false);
+  };
+
+  const handleEditUser = (userData) => {
+    setUsers(users.map(user => 
+      user.id === userData.id ? userData : user
+    ));
+    setIsEditing(false);
+    setSelectedUser(null);
+  };
+
   return (
-    <div className="dashboard">
+    <div className={styles.dashboard}>
       {!selectedUser && !isEditing && (
         <UserList 
           users={users} 
-          onViewProfile={user => setSelectedUser(user)}
+          onViewProfile={setSelectedUser}
           onAddUser={() => setIsEditing(true)}
         />
       )}
@@ -41,18 +60,21 @@ export default function UserDashboard() {
         <UserProfile 
           user={selectedUser}
           onBack={() => setSelectedUser(null)}
-          onEdit={() => setIsEditing(true)}
+          onEdit={() => {
+            setIsEditing(true);
+            setSelectedUser(selectedUser);
+          }}
         />
       )}
       
       {isEditing && (
         <UserForm
-          onSubmit={userData => {
-            // Add your form submission logic here
-            console.log(userData);
+          initialData={selectedUser || null}
+          onSubmit={selectedUser ? handleEditUser : handleAddUser}
+          onCancel={() => {
             setIsEditing(false);
+            setSelectedUser(null);
           }}
-          onCancel={() => setIsEditing(false)}
         />
       )}
     </div>
